@@ -43,10 +43,10 @@ public class ConsoleApp {
                         System.out.println(localization.getMessage("menu.book.id"));
                         int id = scanner.nextInt();
                         scanner.nextLine();
-                        if (bookService.findBookById(id)) {
-                            System.out.printf(localization.getMessage("menu.book.id.exist"));
-                            break;
-                        }
+//                        if (bookService.findBookById(id)) {
+//                            System.out.printf(localization.getMessage("menu.book.id.exist"));
+//                            break;
+//                        }
                         System.out.println(localization.getMessage("menu.book.enter.title"));
                         String title = scanner.nextLine();
                         System.out.println(localization.getMessage("menu.book.enter.author"));
