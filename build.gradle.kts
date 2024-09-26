@@ -17,6 +17,8 @@ dependencies {
     implementation ("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation ("org.springframework:spring-aop:6.1.13")
     implementation ("org.aspectj:aspectjweaver:1.9.6")
+    implementation ("org.springframework:spring-jdbc:6.1.13")
+    implementation("org.postgresql:postgresql:42.7.4")
 
 
     compileOnly ("org.projectlombok:lombok:1.18.34")
