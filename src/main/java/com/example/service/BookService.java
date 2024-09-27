@@ -1,15 +1,12 @@
 package com.example.service;
 
 import com.example.dao.BookDao;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.example.model.Book;
+import com.example.entity.Book;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,11 +28,15 @@ public class BookService {
     }
 
     public void updateBook(int id, Book updatedBook) throws IOException {
-        bookDao.updateBook(id, updatedBook);
+        bookDao.updateBookById(id, updatedBook);
     }
 
     public void deleteBook(int id) throws IOException {
         bookDao.deleteBook(id);
+    }
+
+    public boolean existsBook(int id) {
+        return bookDao.existsBookById(id);
     }
 
 }

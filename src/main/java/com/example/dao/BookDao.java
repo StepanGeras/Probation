@@ -1,61 +1,63 @@
 package com.example.dao;
 
-import com.example.model.Book;
+import com.example.entity.Book;
+import com.example.localization.Localization;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+
 public class BookDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
+    private final Localization localization;
 
     @Autowired
-    public BookDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public BookDao(SessionFactory sessionFactory, Localization localization) {
+        this.sessionFactory = sessionFactory;
+        this.localization = localization;
     }
 
-    private final RowMapper<Book> bookRowMapper = new RowMapper<Book>() {
-        @Override
-        public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Book(
-                    rs.getInt("id"),
-                    rs.getString("title"),
-                    rs.getString("author"),
-                    rs.getString("description")
-            );
-        }
-    };
-
+    @Transactional
     public List<Book> getAllBooks() {
-        String sql = "SELECT * FROM books";
-        return jdbcTemplate.query(sql, bookRowMapper);
+        Session session = sessionFactory.getCurrentSession();
+        Query<Book> query = session.createQuery("from Book", Book.class);
+        return query.getResultList();
     }
 
-    public Book getBookById(int id) {
-        String sql = "SELECT * FROM books WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, bookRowMapper, id);
-    }
-
+    @Transactional
     public void addBook(Book book) {
-        String sql = "INSERT INTO books (title, author, description) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, book.getTitle(), book.getAuthor(), book.getDescription());
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(book);
     }
 
-    public void updateBook(int id, Book book) {
-        String sql = "UPDATE books SET title = ?, author = ?, description = ? WHERE id = ?";
-        jdbcTemplate.update(sql, book.getTitle(), book.getAuthor(), book.getDescription(), id);
+    @Transactional
+    public boolean existsBookById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, id);
+        return book != null;
     }
 
+    @Transactional
+    public void updateBookById(int id, Book book) {
+        Session session = sessionFactory.getCurrentSession();
+        Book newBook = session.get(Book.class, id);
+        newBook.setAuthor(book.getAuthor());
+        newBook.setTitle(book.getTitle());
+        newBook.setDescription(book.getDescription());
+    }
+
+    @Transactional
     public void deleteBook(int id) {
-        String sql = "DELETE FROM books WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, id);
+        session.remove(book);
     }
 
 }
