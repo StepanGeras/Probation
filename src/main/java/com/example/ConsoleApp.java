@@ -54,7 +54,7 @@ public class ConsoleApp {
                         int editId = scanner.nextInt();
                         scanner.nextLine();
 
-                        if (!bookService.existsBook(editId)) {
+                        if (bookService.existsBookById(editId)) {
                             System.out.println(localization.getMessage("menu.book.id.exist"));
                             break;
                         }
@@ -73,7 +73,7 @@ public class ConsoleApp {
                         int deleteId = scanner.nextInt();
                         scanner.nextLine();
 
-                        if (!bookService.existsBook(deleteId)) {
+                        if (bookService.existsBookById(deleteId)) {
                             System.out.println(localization.getMessage("menu.book.id.exist"));
                             break;
                         }

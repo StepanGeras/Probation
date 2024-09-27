@@ -16,12 +16,10 @@ import java.util.List;
 public class BookDao {
 
     private final SessionFactory sessionFactory;
-    private final Localization localization;
 
     @Autowired
-    public BookDao(SessionFactory sessionFactory, Localization localization) {
+    public BookDao(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-        this.localization = localization;
     }
 
     @Transactional

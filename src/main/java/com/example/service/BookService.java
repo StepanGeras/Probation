@@ -2,7 +2,6 @@ package com.example.service;
 
 import com.example.dao.BookDao;
 import com.example.entity.Book;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +34,8 @@ public class BookService {
         bookDao.deleteBook(id);
     }
 
-    public boolean existsBook(int id) {
-        return bookDao.existsBookById(id);
+    public boolean existsBookById(int id) {
+        return !bookDao.existsBookById(id);
     }
 
 }
