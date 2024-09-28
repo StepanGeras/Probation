@@ -22,6 +22,9 @@ dependencies {
 
     implementation ("org.aspectj:aspectjweaver:1.9.6")
 
+    implementation("org.apache.logging.log4j:log4j-api:2.24.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.0")
+
     implementation("org.postgresql:postgresql:42.7.4")
 
     implementation("org.hibernate.orm:hibernate-core:6.6.1.Final")

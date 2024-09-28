@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-
-public class BookDaoImpl implements BookDao{
+public class BookDaoImpl{
 
     private final SessionFactory sessionFactory;
 
