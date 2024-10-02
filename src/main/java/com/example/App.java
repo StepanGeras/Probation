@@ -1,15 +1,13 @@
 package com.example;
 
-import com.example.config.Config;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class App {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-        ConsoleApp app = context.getBean(ConsoleApp.class);
-        app.run();
-        context.close();
+        SpringApplication.run(App.class, args);
     }
 
 }
