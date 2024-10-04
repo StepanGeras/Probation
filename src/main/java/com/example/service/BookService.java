@@ -1,7 +1,8 @@
 package com.example.service;
 
+import com.example.entity.Author;
 import com.example.entity.Book;
-import com.example.exception.BookNotFoundException;
+import com.example.exception.book.BookNotFoundException;
 import com.example.repo.BookRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepo bookRepo;
+    private final AuthorService authorService;
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @Autowired
-    public BookService(BookRepo bookRepo) {
+    public BookService(BookRepo bookRepo, AuthorService authorService) {
         this.bookRepo = bookRepo;
+        this.authorService = authorService;
     }
 
     public List<Book> readBooks() {
@@ -29,8 +32,10 @@ public class BookService {
         return books;
     }
 
-    public void createBook(Book book) {
+    public void createBook(Book book, Long id) {
         logger.info("Creating a book");
+        Author author = authorService.findById(id);
+        book.setAuthor(author);
         bookRepo.save(book);
         logger.info("Book created");
     }
@@ -61,6 +66,12 @@ public class BookService {
         }
         throw new BookNotFoundException("Book not found");
 
+    }
+
+    public void updateBookImage(Long id, String imageId) {
+        Book book = findBookById(id);
+        book.setImageId(imageId);
+        bookRepo.save(book);
     }
 
 }

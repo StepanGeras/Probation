@@ -1,9 +1,11 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Data
@@ -18,7 +20,13 @@ public class Book {
     private long id;
 
     private String title;
-    private String author;
     private String description;
+    private String imageId;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_author")
+    @JsonBackReference
+    @ToString.Exclude
+    private Author author;
 
 }

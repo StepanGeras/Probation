@@ -1,7 +1,9 @@
 package com.example.controller;
 
+import com.example.entity.Author;
 import com.example.entity.Book;
-import com.example.service.BookService;
+import com.example.exception.book.BookFileNotFoundException;
+import com.example.service.AuthorService;
 import com.example.service.ImageService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
@@ -22,74 +24,80 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/book")
-public class BookController {
+@RequestMapping("/author")
+public class AuthorController {
 
-    private final BookService bookService;
+    private final AuthorService authorService;
     private final GridFsTemplate gridFsTemplate;
     private final ImageService imageService;
 
     @Autowired
-    public BookController(BookService bookService, GridFsTemplate gridFsTemplate, ImageService imageService) {
-        this.bookService = bookService;
+    public AuthorController(AuthorService authorService, GridFsTemplate gridFsTemplate, ImageService imageService) {
+        this.authorService = authorService;
         this.gridFsTemplate = gridFsTemplate;
         this.imageService = imageService;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Book>> findAll() {
-        List<Book> findAllBook = bookService.readBooks();
-        return ResponseEntity.ok(findAllBook);
+    public ResponseEntity<List<Author>> getAllAuthors() {
+        List<Author> authorList = authorService.findAll();
+        return ResponseEntity.ok(authorList);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Book> create(@RequestBody Book book, @RequestParam Long id) {
-        bookService.createBook(book, id);
-        return ResponseEntity.ok(book);
+    @PostMapping("/save")
+    public ResponseEntity<Author> saveAuthor(@RequestBody Author author) {
+        authorService.save(author);
+        return ResponseEntity.ok(author);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Book> update(@RequestBody Book book, @RequestParam Long id) {
-        bookService.updateBook(id, book);
-        return ResponseEntity.ok(book);
+    public ResponseEntity<Author> updateAuthor(@RequestBody Author author) {
+        authorService.update(author);
+        return ResponseEntity.ok(author);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Book> delete(@RequestParam Integer id) {
-        bookService.deleteBook(id);
+    public ResponseEntity<Author> deleteAuthorById(@RequestParam long id) {
+        authorService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/find/{id}")
-    public ResponseEntity<Book> findBookById(@PathVariable Integer id) {
-        return ResponseEntity.ok(bookService.findBookById(id));
+    @GetMapping("/all/books/author/{id}")
+    public ResponseEntity<List<Book>> getAllBookByAuthorId(@PathVariable Long id) {
+        List<Book> books = authorService.findAllBooksByAuthorId(id);
+        return ResponseEntity.ok(books);
     }
 
     @PostMapping("/upload/{id}")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadAuthor(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+
         ObjectId fileId;
         try {
             fileId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
-            bookService.updateBookImage(id, fileId.toString());
+            authorService.updateAuthorImage(id, fileId.toString());
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok("Image uploaded successfully with ID: " + fileId);
+
     }
 
     @GetMapping("/download/{id}")
     public ResponseEntity<InputStreamResource> downloadImage(@PathVariable Long id) throws RuntimeException {
 
-        Book book = bookService.findBookById(id);
+        Author author = authorService.findById(id);
+        if (author.getImageId() == null) {
+            throw new BookFileNotFoundException("No image found for this book");
+        }
 
-        GridFSFile gridFsFile = imageService.fileFindGridFs(book.getImageId());
+        GridFSFile gridFSFile = imageService.fileFindGridFs(author.getImageId());
 
-        GridFsResource resource = gridFsTemplate.getResource(gridFsFile);
+        GridFsResource resource = gridFsTemplate.getResource(gridFSFile);
 
         try {
             String fileName = URLEncoder.encode(Objects.requireNonNull(resource.getFilename()), StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Objects.requireNonNull(gridFsFile.getMetadata()).getString("_contentType")))
+                    .contentType(MediaType.parseMediaType(Objects.requireNonNull(gridFSFile.getMetadata()).getString("_contentType")))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + fileName)
                     .body(new InputStreamResource(resource.getInputStream()));
         } catch (IOException e) {
