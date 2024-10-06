@@ -24,9 +24,9 @@ public class Book {
     private String imageId;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_author")
+    @JoinColumn(name = "id_user")
     @JsonBackReference
     @ToString.Exclude
-    private Author author;
+    private User user;
 
 }

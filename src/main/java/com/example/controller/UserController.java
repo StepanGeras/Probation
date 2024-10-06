@@ -1,9 +1,9 @@
 package com.example.controller;
 
-import com.example.entity.Author;
+import com.example.entity.User;
 import com.example.entity.Book;
 import com.example.exception.book.BookFileNotFoundException;
-import com.example.service.AuthorService;
+import com.example.service.UserService;
 import com.example.service.ImageService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
@@ -25,46 +25,40 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/author")
-public class AuthorController {
+public class UserController {
 
-    private final AuthorService authorService;
+    private final UserService userService;
     private final GridFsTemplate gridFsTemplate;
     private final ImageService imageService;
 
     @Autowired
-    public AuthorController(AuthorService authorService, GridFsTemplate gridFsTemplate, ImageService imageService) {
-        this.authorService = authorService;
+    public UserController(UserService userService, GridFsTemplate gridFsTemplate, ImageService imageService) {
+        this.userService = userService;
         this.gridFsTemplate = gridFsTemplate;
         this.imageService = imageService;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Author>> getAllAuthors() {
-        List<Author> authorList = authorService.findAll();
-        return ResponseEntity.ok(authorList);
-    }
-
-    @PostMapping("/save")
-    public ResponseEntity<Author> saveAuthor(@RequestBody Author author) {
-        authorService.save(author);
-        return ResponseEntity.ok(author);
+    public ResponseEntity<List<User>> getAllAuthors() {
+        List<User> userList = userService.findAll();
+        return ResponseEntity.ok(userList);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Author> updateAuthor(@RequestBody Author author) {
-        authorService.update(author);
-        return ResponseEntity.ok(author);
+    public ResponseEntity<User> updateAuthor(@RequestBody User user) {
+        userService.update(user);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Author> deleteAuthorById(@RequestParam long id) {
-        authorService.deleteById(id);
+    public ResponseEntity<User> deleteAuthorById(@RequestParam long id) {
+        userService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all/books/author/{id}")
     public ResponseEntity<List<Book>> getAllBookByAuthorId(@PathVariable Long id) {
-        List<Book> books = authorService.findAllBooksByAuthorId(id);
+        List<Book> books = userService.findAllBooksByUserId(id);
         return ResponseEntity.ok(books);
     }
 
@@ -74,7 +68,7 @@ public class AuthorController {
         ObjectId fileId;
         try {
             fileId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
-            authorService.updateAuthorImage(id, fileId.toString());
+            userService.updateAuthorImage(id, fileId.toString());
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -85,12 +79,12 @@ public class AuthorController {
     @GetMapping("/download/{id}")
     public ResponseEntity<InputStreamResource> downloadImage(@PathVariable Long id) throws RuntimeException {
 
-        Author author = authorService.findById(id);
-        if (author.getImageId() == null) {
+        User user = userService.findById(id);
+        if (user.getImageId() == null) {
             throw new BookFileNotFoundException("No image found for this book");
         }
 
-        GridFSFile gridFSFile = imageService.fileFindGridFs(author.getImageId());
+        GridFSFile gridFSFile = imageService.fileFindGridFs(user.getImageId());
 
         GridFsResource resource = gridFsTemplate.getResource(gridFSFile);
 
