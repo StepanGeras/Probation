@@ -25,9 +25,6 @@ public class BookService {
 
     public List<Book> readBooks() throws IOException {
         File csvFile = new File(CSV_FILE_PATH);
-        if (!csvFile.exists()) {
-            return new ArrayList<>();
-        }
 
         return csvMapper.readerFor(Book.class)
                 .with(csvSchema)
@@ -48,15 +45,15 @@ public class BookService {
         writeBooks(books);
     }
 
-    public boolean findBookById(int id) throws IOException {
-        List<Book> books = readBooks();
-        for (Book book : books) {
-            if (book.getId() == id) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean findBookById(int id) throws IOException {
+//        List<Book> books = readBooks();
+//        for (Book book : books) {
+//            if (book.getId() == id) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public void updateBook(int id, Book updatedBook) throws IOException {
         List<Book> books = readBooks();

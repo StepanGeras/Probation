@@ -15,6 +15,9 @@ dependencies {
     implementation ("org.springframework:spring-context:6.1.12")
     implementation ("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.15.2")
     implementation ("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation ("org.springframework:spring-aop:6.1.13")
+    implementation ("org.aspectj:aspectjweaver:1.9.6")
+
 
     compileOnly ("org.projectlombok:lombok:1.18.34")
     annotationProcessor ("org.projectlombok:lombok:1.18.34")
