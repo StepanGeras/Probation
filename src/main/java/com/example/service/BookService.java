@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.entity.Author;
+import com.example.entity.User;
 import com.example.entity.Book;
 import com.example.exception.book.BookNotFoundException;
 import com.example.repo.BookRepo;
@@ -16,13 +16,13 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepo bookRepo;
-    private final AuthorService authorService;
+    private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @Autowired
-    public BookService(BookRepo bookRepo, AuthorService authorService) {
+    public BookService(BookRepo bookRepo, UserService userService) {
         this.bookRepo = bookRepo;
-        this.authorService = authorService;
+        this.userService = userService;
     }
 
     public List<Book> readBooks() {
@@ -34,8 +34,8 @@ public class BookService {
 
     public void createBook(Book book, Long id) {
         logger.info("Creating a book");
-        Author author = authorService.findById(id);
-        book.setAuthor(author);
+        User user = userService.findById(id);
+        book.setUser(user);
         bookRepo.save(book);
         logger.info("Book created");
     }
@@ -43,7 +43,7 @@ public class BookService {
     public void updateBook(long id, Book updatedBook) {
         logger.info("Updating a book");
         Book book = findBookById(id);
-        book.setAuthor(updatedBook.getAuthor());
+        book.setUser(updatedBook.getUser());
         book.setTitle(updatedBook.getTitle());
         book.setDescription(updatedBook.getDescription());
         bookRepo.save(book);
